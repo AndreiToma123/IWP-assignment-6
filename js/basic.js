@@ -69,9 +69,9 @@ async function initializeCode() {
     const submit_button = document.getElementById("submit-data");
 
     submit_button.addEventListener("click", async function() {
-        const municipality_name = document.getElementById("input-area").value;
-        const municipality_code = await getMunCode(municipality_name);
-        jsonQuery.query[1].selection.values = [municipality_code];
+        const mun_name = document.getElementById("input-area").value;
+        const mun_code = await getMunCode(mun_name);
+        jsonQuery.query[1].selection.values = [mun_code];
         const data = await getData();
         console.log(data);
         buildChart(data);
