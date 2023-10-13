@@ -70,7 +70,7 @@ async function initializeCode() {
 
     submit_button.addEventListener("click", async function() {
         const municipality_name = document.getElementById("input-area").value;
-        const municipality_code = await getMunicipalityCode(municipality_name);
+        const municipality_code = await getMunCode(municipality_name);
         jsonQuery.query[1].selection.values = [municipality_code];
         const data = await getData();
         console.log(data);
@@ -79,9 +79,6 @@ async function initializeCode() {
 
     const getData = async () => {
     const url = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px"
-    // const log = await fetch(url);
-    // new_log = await log.json();
-    // console.log(new_log);
     const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify(jsonQuery),
@@ -89,13 +86,10 @@ async function initializeCode() {
         
     })
     if(!res.ok){
-        
         return;
     }
     const data = await res.json();
-    
     return data
-
 }   
 
 const buildChart = async () =>{
@@ -106,7 +100,7 @@ const buildChart = async () =>{
         labels: ["2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021"],
         datasets: [
             {
-                name: "Population",
+                name: "Population data chart",
                 values: data.value,
             }
         ]
@@ -116,22 +110,20 @@ const buildChart = async () =>{
             title: "Population data chart",
             type: "line",
             data: chart_data,
-            height: 450,
+            height: 454,
             colors: ['#eb5146']
     
         })
 }
 
-async function getMunicipalityCode(municipality_name) {
+async function getMunCode(municipality_name) {
     const url = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px";
-
     const res = await fetch(url);
     const new_data = await res.json();
-    console.log(new_data);
-   
     let municipality_code = null;
+    console.log(new_data);
+
     for (let i = 0; i < new_data.variables[1].valueTexts.length; i++) {
-        
         if (new_data.variables[1].valueTexts[i].toLowerCase() === municipality_name.toLowerCase()) {
             municipality_code = new_data.variables[1].values[i];
             break;
