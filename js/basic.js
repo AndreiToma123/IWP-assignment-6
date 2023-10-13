@@ -9,12 +9,6 @@ if(document.readyState !== "loading") {
 }
 
 async function initializeCode() {
-    const submit_button = document.getElementById("submit-data");
-
-    submit_button.addEventListener("click", function() {
-        const municipality_name = document.getElementById("input-area").value;
-        
-    })
 
     const jsonQuery = {
         "query": [
@@ -72,9 +66,22 @@ async function initializeCode() {
         }
     }
 
+    const submit_button = document.getElementById("submit-data");
+
+    submit_button.addEventListener("click", async function() {
+        const municipality_name = document.getElementById("input-area").value;
+        const municipality_code = await getMunicipalityCode(municipality_name);
+        jsonQuery.query[1].selection.values = [municipality_code];
+        const data = await getData();
+        console.log(data);
+        buildChart(data);
+    });
+
     const getData = async () => {
     const url = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px"
-    
+    // const log = await fetch(url);
+    // new_log = await log.json();
+    // console.log(new_log);
     const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify(jsonQuery),
@@ -104,7 +111,7 @@ const buildChart = async () =>{
             }
         ]
     };
-    
+
         const chart = new frappe.Chart("#chart", {
             title: "Population data chart",
             type: "line",
@@ -115,6 +122,32 @@ const buildChart = async () =>{
         })
 }
 
+async function getMunicipalityCode(municipality_name) {
+    const url = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px";
+
+    const res = await fetch(url);
+    const new_data = await res.json();
+    console.log(new_data);
+   
+    let municipality_code = null;
+    for (let i = 0; i < new_data.variables[1].valueTexts.length; i++) {
+        
+        if (new_data.variables[1].valueTexts[i].toLowerCase() === municipality_name.toLowerCase()) {
+            municipality_code = new_data.variables[1].values[i];
+            break;
+        }
+    }
+
+    console.log(municipality_code);
+    return municipality_code;
+}
+
 buildChart();
 
 }
+
+
+
+
+
+
